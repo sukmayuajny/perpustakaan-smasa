@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPERPUS - SMAN 1 Magetan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pastel-blue: #A2D2FF;
+            --pastel-pink: #FFC2D1;
+            --pastel-light-blue: #BDE0FE;
+            --pastel-light-pink: #FFE5EC;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            display: flex;
+            min-h-screen;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 2px solid var(--pastel-light-pink);
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255, 194, 209, 0.3);
+        }
+
+        .btn-primary {
+            background-color: var(--pastel-blue);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #8bbceb;
+            transform: scale(1.02);
+        }
+
+        .active-nav {
+            background-color: var(--pastel-light-pink);
+            color: #d63384;
+            border-radius: 12px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--pastel-blue);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Sidebar -->
+    <aside class="sidebar p-6 hidden md:flex">
+        <div class="flex items-center space-x-3 mb-10">
+            <img src="https://smasa-magetan.sch.id/wp-content/uploads/2023/06/LOGO-SMA-NEGERI-1-MAGETAN-258x300.png" 
+                 alt="Logo SMASA" class="h-12 w-auto">
+            <span class="font-bold text-xl text-gray-700 leading-tight">SIPERPUS<br><span class="text-xs font-normal opacity-60">SMAN 1 Magetan</span></span>
+        </div>
+
+        <!-- Profil Dashboard Mini -->
+        <div class="bg-gradient-to-br from-[#FFE5EC] to-[#FFC2D1] p-5 rounded-3xl mb-8 shadow-sm">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm">👤</div>
+                <div>
+                    <p id="side-nama" class="font-bold text-sm text-gray-800 truncate w-32">Budiono Siregar</p>
+                    <p id="side-kelas" class="text-[10px] text-pink-600 font-semibold uppercase tracking-wider">XII MIPA 1</p>
+                </div>
+            </div>
+            <div class="bg-white/50 rounded-xl p-3 flex justify-around text-center">
+                <div>
+                    <p class="text-[10px] text-gray-500 uppercase">Total</p>
+                    <p id="stat-total" class="font-bold text-gray-800">0</p>
+                </div>
+                <div class="border-l border-pink-200"></div>
+                <div>
+                    <p class="text-[10px] text-gray-500 uppercase">Aktif</p>
+                    <p id="stat-active" class="font-bold text-gray-800">0</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="space-y-2 flex-1">
+            <a href="#" class="flex items-center space-x-3 p-3 active-nav font-semibold">
+                <span>🏠</span> <span>Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-3 text-gray-500 hover:bg-slate-50 rounded-xl transition-all">
+                <span>📖</span> <span>Katalog Buku</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-3 text-gray-500 hover:bg-slate-50 rounded-xl transition-all">
+                <span>⚙️</span> <span>Pengaturan</span>
+            </a>
+        </nav>
+
+        <button onclick="toggleEditProfile()" class="mt-auto text-xs font-bold text-pink-400 py-3 border-2 border-dashed border-pink-100 rounded-2xl hover:bg-pink-50">
+            PENGATURAN PROFIL
+        </button>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Header Mobile & Top Bar -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Selamat Datang! 👋</h2>
+                <p id="current-date" class="text-sm text-gray-400 font-medium"></p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex flex-col text-right">
+                    <span id="disp-nisn" class="text-xs font-bold text-blue-400">NISN: 0081234567</span>
+                    <span class="text-[10px] text-gray-400 uppercase">Anggota Aktif</span>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-pastel-blue flex items-center justify-center text-white shadow-lg shadow-blue-100">
+                    B
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+            
+            <!-- Left: Transaction Form -->
+            <div class="xl:col-span-4 space-y-8">
+                <div class="card p-8">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="p-3 bg-blue-50 rounded-2xl text-xl">✍️</div>
+                        <h3 class="text-lg font-bold text-gray-800">Pinjam Buku</h3>
+                    </div>
+                    <form id="loanForm" class="space-y-5">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Judul Buku</label>
+                            <input type="text" id="bookTitle" required class="w-full px-5 py-3 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all" placeholder="Masukkan judul buku...">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Kategori</label>
+                            <select id="bookType" class="w-full px-5 py-3 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-200 outline-none text-sm appearance-none">
+                                <option>Fiksi</option>
+                                <option>Non-Fiksi</option>
+                                <option>Buku Pelajaran</option>
+                                <option>Ensiklopedia</option>
+                                <option>Komik</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-gray-400 uppercase ml-1">Tanggal Pinjam</label>
+                            <input type="date" id="loanDate" required class="w-full px-5 py-3 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-200 outline-none text-sm">
+                        </div>
+                        <button type="submit" class="w-full py-4 rounded-2xl btn-primary font-bold shadow-xl shadow-blue-100 mt-4 flex items-center justify-center space-x-2">
+                            <span>Konfirmasi Pinjam</span>
+                            <span>🚀</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Info Card -->
+                <div class="bg-blue-600 rounded-[32px] p-8 text-white relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h4 class="font-bold text-lg mb-2">Informasi Penting</h4>
+                        <p class="text-xs opacity-80 leading-relaxed">Maksimal peminjaman adalah 7 hari. Harap kembalikan buku tepat waktu untuk menghindari denda administrasi.</p>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12">📚</div>
+                </div>
+            </div>
+
+            <!-- Right: List Table -->
+            <div class="xl:col-span-8">
+                <div class="card p-8 h-full">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xl font-bold text-gray-800">Daftar Pinjaman</h3>
+                        <div class="flex bg-slate-100 p-1 rounded-xl">
+                            <button class="px-4 py-1.5 bg-white rounded-lg shadow-sm text-xs font-bold text-blue-500">Semua</button>
+                            <button class="px-4 py-1.5 text-xs font-bold text-gray-400">Aktif</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-xs font-bold text-gray-300 uppercase tracking-widest border-b border-gray-50">
+                                    <th class="pb-4">Buku</th>
+                                    <th class="pb-4">Durasi</th>
+                                    <th class="pb-4 text-center">Status</th>
+                                    <th class="pb-4 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loanTableBody" class="divide-y divide-gray-50">
+                                <!-- JS items here -->
+                            </tbody>
+                        </table>
+                        <div id="emptyState" class="py-20 text-center flex flex-col items-center">
+                            <div class="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center text-5xl mb-4">🔍</div>
+                            <p class="text-gray-400 font-medium">Belum ada aktivitas peminjaman</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Edit Profil -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl scale-in">
+            <h3 class="text-2xl font-bold mb-2 text-gray-800">Edit Data Diri</h3>
+            <p class="text-gray-400 text-sm mb-8">Sesuaikan informasi profil perpustakaan Anda.</p>
+            
+            <div class="space-y-5">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Nama Lengkap</label>
+                    <input type="text" id="editNama" class="w-full px-5 py-3 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-pink-200 outline-none text-sm">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">NISN</label>
+                    <input type="text" id="editNisn" class="w-full px-5 py-3 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-pink-200 outline-none text-sm">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Kelas</label>
+                    <input type="text" id="editKelas" class="w-full px-5 py-3 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-pink-200 outline-none text-sm">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mt-10">
+                <button onclick="toggleEditProfile()" class="py-4 bg-slate-100 text-gray-500 rounded-2xl font-bold">Batal</button>
+                <button onclick="saveProfile()" class="py-4 bg-pastel-pink text-white rounded-2xl font-bold shadow-lg shadow-pink-100">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-10 right-10 bg-gray-900 text-white px-8 py-4 rounded-3xl text-sm shadow-2xl opacity-0 transition-all duration-300 pointer-events-none z-[60] translate-y-10">
+        Pesan di sini
+    </div>
+
+    <script>
+        let loans = [];
+        let profile = {
+            nama: "Budiono Siregar",
+            nisn: "0081234567",
+            kelas: "XII MIPA 1"
+        };
+
+        // UI Initialization
+        document.getElementById('current-date').innerText = new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(new Date());
+
+        function updateProfileUI() {
+            document.getElementById('side-nama').innerText = profile.nama;
+            document.getElementById('side-kelas').innerText = profile.kelas;
+            document.getElementById('disp-nisn').innerText = `NISN: ${profile.nisn}`;
+        }
+
+        function toggleEditProfile() {
+            document.getElementById('editNama').value = profile.nama;
+            document.getElementById('editNisn').value = profile.nisn;
+            document.getElementById('editKelas').value = profile.kelas;
+            document.getElementById('profileModal').classList.toggle('hidden');
+        }
+
+        function saveProfile() {
+            profile.nama = document.getElementById('editNama').value;
+            profile.nisn = document.getElementById('editNisn').value;
+            profile.kelas = document.getElementById('editKelas').value;
+            updateProfileUI();
+            showToast("Profil berhasil diperbarui ✨");
+            toggleEditProfile();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 3000);
+        }
+
+        document.getElementById('loanForm').onsubmit = (e) => {
+            e.preventDefault();
+            const title = document.getElementById('bookTitle').value;
+            const type = document.getElementById('bookType').value;
+            const dateStr = document.getElementById('loanDate').value;
+            
+            const pinjamDate = new Date(dateStr);
+            const kembaliDate = new Date(pinjamDate);
+            kembaliDate.setDate(pinjamDate.getDate() + 7);
+
+            const newLoan = {
+                id: Date.now(),
+                title,
+                type,
+                pinjam: dateStr,
+                kembali: kembaliDate.toISOString().split('T')[0],
+                returned: false
+            };
+
+            loans.unshift(newLoan); // Add to top
+            document.getElementById('loanForm').reset();
+            document.getElementById('loanDate').valueAsDate = new Date();
+            renderTable();
+            showToast("Berhasil mencatat pinjaman 📖");
+        };
+
+        function returnBook(id) {
+            loans = loans.map(loan => loan.id === id ? {...loan, returned: true} : loan);
+            renderTable();
+            showToast("Buku telah dikembalikan! ✅");
+        }
+
+        function deleteLoan(id) {
+            loans = loans.filter(loan => loan.id !== id);
+            renderTable();
+            showToast("Data telah dihapus 🗑️");
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('loanTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (loans.length === 0) {
+                emptyState.style.display = 'flex';
+                tableBody.innerHTML = '';
+            } else {
+                emptyState.style.display = 'none';
+                tableBody.innerHTML = loans.map(loan => `
+                    <tr class="group hover:bg-slate-50 transition-all duration-300">
+                        <td class="py-5">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-lg">📙</div>
+                                <div>
+                                    <p class="font-bold text-gray-700 text-sm">${loan.title}</p>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase">${loan.type}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-5">
+                            <div class="text-[11px] font-medium">
+                                <span class="text-gray-400">Pnjm:</span> <span class="text-gray-600">${loan.pinjam}</span><br>
+                                <span class="text-gray-400">Kmbl:</span> <span class="text-blue-500 font-bold">${loan.kembali}</span>
+                            </div>
+                        </td>
+                        <td class="py-5 text-center">
+                            ${loan.returned 
+                                ? '<span class="px-3 py-1 bg-green-100 text-green-600 text-[10px] rounded-full font-bold">SUDAH KEMBALI</span>' 
+                                : '<span class="px-3 py-1 bg-blue-100 text-blue-600 text-[10px] rounded-full font-bold">SEDANG PINJAM</span>'}
+                        </td>
+                        <td class="py-5 text-right">
+                            <div class="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                ${!loan.returned ? `
+                                    <button onclick="returnBook(${loan.id})" class="p-2 bg-green-50 text-green-500 rounded-lg hover:bg-green-100" title="Kembalikan">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                                <button onclick="deleteLoan(${loan.id})" class="p-2 bg-pink-50 text-pink-500 rounded-lg hover:bg-pink-100" title="Hapus">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Update Stats
+            document.getElementById('stat-total').innerText = loans.length;
+            document.getElementById('stat-active').innerText = loans.filter(l => !l.returned).length;
+            document.getElementById('stat-total').innerText = loans.length;
+        }
+
+        // Init
+        document.getElementById('loanDate').valueAsDate = new Date();
+        updateProfileUI();
+    </script>
+</body>
+</html>
